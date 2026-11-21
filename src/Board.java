@@ -20,7 +20,7 @@ public class Board {
     }
 
     public boolean isSunk() {
-        return hitCount > BATTLESHIP_LENGTH;
+        return hitCount >= BATTLESHIP_LENGTH;
     }
 
     public void reveal() {
@@ -44,26 +44,20 @@ public class Board {
     }
 
     private void addBattleship() {
-        Point startPoint = randomGridPoint();
-        Point endPoint = calculateEndPoint(startPoint);
+        // Vælg retning først (0 = vandret, 1 = lodret), så startpunktet kan vælges,
+        // så hele skibet altid er inden for griddet.
+        boolean vertical = getRandomInteger(1) == 1;
+        int maxX = vertical ? grid.length - 1 : grid.length - BATTLESHIP_LENGTH;
+        int maxY = vertical ? grid.length - BATTLESHIP_LENGTH : grid.length - 1;
+
+        Point startPoint = new Point(getRandomInteger(maxX), getRandomInteger(maxY));
+        Point endPoint = vertical ? getVerticalEndPoint(startPoint) : getHorizontalEndPoint(startPoint);
 
         for (int x = startPoint.x; x < endPoint.x + 1; x++) {
             for (int y = startPoint.y; y < endPoint.y + 1; y++) {
                 grid[x][y] = true;
             }
         }
-    }
-
-    private Point randomGridPoint() {
-        return new Point(getRandomInteger(grid.length - 1), getRandomInteger(grid.length - 1));
-    }
-
-    private Point calculateEndPoint(Point startPoint) {
-        return switch (getRandomInteger(1)) {
-            case 0 -> getHorizontalEndPoint(startPoint);
-            case 1 -> getVerticalEndPoint(startPoint);
-            default -> throw new IllegalStateException("Unexpected value.");
-        };
     }
 
     private Point getHorizontalEndPoint(Point startPoint) {
@@ -74,7 +68,8 @@ public class Board {
         return new Point(startPoint.x, startPoint.y + BATTLESHIP_LENGTH - 1);
     }
 
+    // Returnerer et tilfældigt tal fra 0 til og med maxValue.
     private static int getRandomInteger(int maxValue) {
-        return new Random().nextInt(maxValue);
+        return new Random().nextInt(maxValue + 1);
     }
 }

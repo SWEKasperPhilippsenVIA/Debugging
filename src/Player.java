@@ -33,7 +33,8 @@ public class Player {
         return new Point(randomInteger(board.getGridSize() - 1), randomInteger(board.getGridSize() - 1));
     }
 
+    // Returnerer et tilfældigt tal fra 0 til og med maxValue.
     private static int randomInteger(int maxValue) {
-        return new Random().nextInt(maxValue);
+        return new Random().nextInt(maxValue + 1);
     }
 }
